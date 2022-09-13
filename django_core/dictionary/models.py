@@ -1,3 +1,44 @@
+from statistics import mode
 from django.db import models
+from django.contrib.auth.models import User
 
 
+class Person(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    telegram_id = models.CharField(max_length=150)
+
+    def __str__(self) -> str:
+        return self.user.username
+
+
+class Word(models.Model):
+    word = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return self.word
+
+
+class PersonWord(models.Model):
+    word = models.ForeignKey(Word, on_delete=models.CASCADE)    #on_delete ???
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)    #on_delete ???
+    date_add = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(max_length=50)
+
+    def __str__(self) -> str:
+        return str(self.word)
+
+
+class WordStat(models.Model):
+    true_answer = models.IntegerField()
+    false_answer = models.IntegerField()
+
+
+class WordDetail(models.Model):
+    translate = models.CharField(max_length=50)
+    example = models.TextField(max_length=150)
+    word = models.ForeignKey(PersonWord, on_delete=models.CASCADE)  #on_delete ???
+    date_add = models.DateTimeField(auto_now_add=True)
+    word_stat = models.OneToOneField(WordStat, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.translate
