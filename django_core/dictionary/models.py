@@ -20,12 +20,12 @@ class Word(models.Model):
 
 class PersonWord(models.Model):
     word = models.ForeignKey(Word, on_delete=models.CASCADE)    #on_delete ???
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)    #on_delete ???
+    person = models.ForeignKey(Person,  related_name='words', on_delete=models.CASCADE)    #on_delete ???
     date_add = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length=50)
 
     def __str__(self) -> str:
-        return str(self.word)
+        return '%s: %s : %s' % (self.word.word, self.slug, self.words_detail.values())
 
 
 class WordStat(models.Model):
@@ -36,7 +36,7 @@ class WordStat(models.Model):
 class WordDetail(models.Model):
     translate = models.CharField(max_length=50)
     example = models.TextField(max_length=150)
-    word = models.ForeignKey(PersonWord, on_delete=models.CASCADE)  #on_delete ???
+    word = models.ForeignKey(PersonWord, related_name='words_detail', on_delete=models.CASCADE)  #on_delete ???
     date_add = models.DateTimeField(auto_now_add=True)
     word_stat = models.OneToOneField(WordStat, on_delete=models.CASCADE)
 
