@@ -2,5 +2,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('api/v1/list', AlbumAPIView.as_view())
+    path('cats/', cat_list, name='cat_list'),
+    path('hello/', hello, name='hello'),
+    path('hello/<int:pk>/', hello1, name='hello1'),
 ]

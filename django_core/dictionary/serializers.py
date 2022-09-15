@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from .models import *
 
-class AlbumSerializer(serializers.ModelSerializer):
-    words = serializers.StringRelatedField(many=True)
+from .models import Cat
 
+
+class CatSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Person
-        fields = ['telegram_id', 'words']
+        model = Cat
+        fields = ('name', 'color', 'birth_year')

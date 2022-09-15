@@ -25,7 +25,7 @@ class PersonWord(models.Model):
     slug = models.SlugField(max_length=50)
 
     def __str__(self) -> str:
-        return '%s: %s : %s' % (self.word.word, self.slug, self.words_detail.values())
+        return self.word
 
 
 class WordStat(models.Model):
@@ -42,3 +42,13 @@ class WordDetail(models.Model):
 
     def __str__(self) -> str:
         return self.translate
+
+
+"""For test API"""
+class Cat(models.Model):
+    name = models.CharField(max_length=16)
+    color = models.CharField(max_length=16)
+    birth_year = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
