@@ -3,6 +3,6 @@ from .views import *
 
 urlpatterns = [
     path('cats/', cat_list, name='cat_list'),
-    path('hello/', hello, name='hello'),
-    path('hello/<int:pk>/', hello1, name='hello1'),
+    path('hello/', CatListApi.as_view(), name='hello'),
+    path('hello/<int:pk>/', CatDetailApi.as_view(), name='hello1'),
 ]
