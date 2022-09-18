@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cat, Owner, Achievement, AchievementCat
+from .models import Cat, Owner, Achievement, AchievementCat, Person, PersonWordList, Word, WordStat, WordDetail
 
 
 class OwnerSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class AchievementSerializer(serializers.ModelSerializer):
 class CatSerializer(serializers.ModelSerializer):
     #owner = serializers.StringRelatedField(read_only=True)
     #read_only=True,
-    achievements = AchievementSerializer( many=True)
+    achievements = AchievementSerializer(many=True)
 
     class Meta:
         model = Cat
@@ -43,3 +43,37 @@ class CatSerializer(serializers.ModelSerializer):
             AchievementCat.objects.create(
                 achievement=current_achievement, cat=cat)
         return cat
+
+
+class PersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Person
+        fields = ('user', 'telegram_id') 
+
+class WordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Word
+        fields = ('word',) 
+
+class WordStatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WordStat
+        fields = ('true_answer', 'false_answer') 
+
+class WordDetailSerializer(serializers.ModelSerializer):
+    word_stat = WordStatSerializer()
+    class Meta:
+        model = WordDetail
+        fields = ('translate', 'example', 'date_add', 'word_stat')
+
+
+class PersonWordListSerializer(serializers.ModelSerializer):
+    word = WordSerializer(many=True, read_only=True)
+    person = PersonSerializer(read_only=True)
+    words_detail = WordDetailSerializer(many=True, read_only=True)
+    class Meta:
+        model = PersonWordList
+        fields = ('person', 'word', 'date_add', 'slug', 'words_detail')
+
+    def update(self, instance, validated_data):
+        print(validated_data)

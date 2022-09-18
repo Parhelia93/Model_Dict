@@ -18,14 +18,22 @@ class Word(models.Model):
         return self.word
 
 
-class PersonWord(models.Model):
-    word = models.ForeignKey(Word, on_delete=models.CASCADE)    #on_delete ???
-    person = models.ForeignKey(Person,  related_name='words', on_delete=models.CASCADE)    #on_delete ???
+class PersonWordList(models.Model):
+    word = models.ManyToManyField(Word, through='PersonWordListWord') 
+    person = models.ForeignKey(Person,  related_name='words', on_delete=models.CASCADE)    
     date_add = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length=50)
 
     def __str__(self) -> str:
-        return self.word
+        return self.slug
+
+
+class PersonWordListWord(models.Model):
+    word = models.ForeignKey(Word, on_delete=models.CASCADE)
+    person_list = models.ForeignKey(PersonWordList, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.word} {self.person_list}'
 
 
 class WordStat(models.Model):
@@ -36,7 +44,7 @@ class WordStat(models.Model):
 class WordDetail(models.Model):
     translate = models.CharField(max_length=50)
     example = models.TextField(max_length=150)
-    word = models.ForeignKey(PersonWord, related_name='words_detail', on_delete=models.CASCADE)  #on_delete ???
+    word = models.ForeignKey(PersonWordList, related_name='words_detail', on_delete=models.CASCADE)  
     date_add = models.DateTimeField(auto_now_add=True)
     word_stat = models.OneToOneField(WordStat, on_delete=models.CASCADE)
 

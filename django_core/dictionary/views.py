@@ -2,8 +2,8 @@ from django.shortcuts import render, HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Cat, Owner
-from .serializers import CatSerializer, OwnerSerializer
+from .models import Cat, Owner, Person, Word, WordStat, PersonWordList
+from .serializers import CatSerializer, OwnerSerializer, PersonSerializer, WordSerializer, WordStatSerializer, PersonWordListSerializer
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import viewsets
@@ -109,8 +109,36 @@ class CatViewSet(viewsets.ModelViewSet):
     queryset = Cat.objects.all()
     serializer_class = CatSerializer
 
-
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = Owner.objects.all()
     serializer_class = OwnerSerializer 
+
+class PersonViewSet(viewsets.ModelViewSet):
+    queryset = Person.objects.all()
+    serializer_class = PersonSerializer 
+
+class WordViewSet(viewsets.ModelViewSet):
+    queryset = Word.objects.all()
+    serializer_class = WordSerializer 
+
+class WordStatViewSet(viewsets.ModelViewSet):
+    queryset = WordStat.objects.all()
+    serializer_class = WordStatSerializer 
+
+# class PersonWordListViewSet(viewsets.ModelViewSet):
+#     queryset = PersonWordList.objects.all()
+#     serializer_class = PersonWordListSerializer 
+
+class PersonWordListViewSet(generics.ListAPIView):
+    serializer_class = PersonWordListSerializer 
+
+    def get_queryset(self):
+        queryset = PersonWordList.objects.all()
+        telegram_id = self.kwargs['telegram_id']
+        if telegram_id is not None:
+            person = Person.objects.get(telegram_id=telegram_id)
+            queryset = queryset.filter(person=person)
+        return queryset
+
+    
 
