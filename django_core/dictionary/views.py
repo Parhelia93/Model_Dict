@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Cat, Owner, Person, Word, WordStat, PersonWordList
-from .serializers import CatSerializer, OwnerSerializer, PersonSerializer, WordSerializer, WordStatSerializer, PersonWordListSerializer
+from .serializers import CatSerializer, OwnerSerializer, PersonSerializer, WordSerializer, WordStatSerializer, PersonWordListSerializer, UpdatePersonWordSerializer
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import viewsets
@@ -139,6 +139,15 @@ class PersonWordListViewSet(generics.ListAPIView):
             person = Person.objects.get(telegram_id=telegram_id)
             queryset = queryset.filter(person=person)
         return queryset
+
+class UpdatePersonWordList(generics.UpdateAPIView):
+    queryset = PersonWordList.objects.all()
+    serializer_class = UpdatePersonWordSerializer
+    
+    def update(self, request, *args, **kwargs):
+        print(request.data.get('person').get('telegram_id'))
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+    
 
     
 

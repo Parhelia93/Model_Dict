@@ -75,5 +75,10 @@ class PersonWordListSerializer(serializers.ModelSerializer):
         model = PersonWordList
         fields = ('person', 'word', 'date_add', 'slug', 'words_detail')
 
-    def update(self, instance, validated_data):
-        print(validated_data)
+class UpdatePersonWordSerializer(serializers.ModelSerializer):
+    word = WordSerializer()
+    person = PersonSerializer()
+    words_detail = WordDetailSerializer()
+    class Meta:
+        model = PersonWordList
+        fields = ('person', 'word', 'words_detail')
