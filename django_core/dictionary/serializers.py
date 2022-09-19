@@ -82,3 +82,5 @@ class UpdatePersonWordSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonWordList
         fields = ('person', 'word', 'words_detail')
+
+    

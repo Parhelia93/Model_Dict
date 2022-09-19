@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Cat, Owner, Person, Word, WordStat, PersonWordList
+from .models import Cat, Owner, Person, Word, WordDetail, WordStat, PersonWordList
 from .serializers import CatSerializer, OwnerSerializer, PersonSerializer, WordSerializer, WordStatSerializer, PersonWordListSerializer, UpdatePersonWordSerializer
 from rest_framework.views import APIView
 from rest_framework import generics
@@ -141,12 +141,21 @@ class PersonWordListViewSet(generics.ListAPIView):
         return queryset
 
 class UpdatePersonWordList(generics.UpdateAPIView):
-    queryset = PersonWordList.objects.all()
+    queryset = Person.objects.all()
     serializer_class = UpdatePersonWordSerializer
-    
+    lookup_field = 'telegram_id'
     def update(self, request, *args, **kwargs):
-        print(request.data.get('person').get('telegram_id'))
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        # telegram_id = request.data.get('person').get('telegram_id')
+        # word = request.data.get('word').get('word')
+        # word_instance = Word.objects.sget(word=word)
+        # word_detail = request.data.get('words_detail').get('translate')
+        # person = Person.objects.get(telegram_id=telegram_id)
+        # instance = PersonWordList.objects.get(person=person, word=word_instance)
+        # print(instance.words_detail.translate)
+        # a = self.get_queryset()
+        # person = a.filter(telegram_id='bla-bla-bla')[0]
+        # print(b)
+        #serializer = self.get_serializer(instance, data=request.data, partial=True)
     
 
     
