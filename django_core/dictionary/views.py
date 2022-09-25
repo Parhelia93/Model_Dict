@@ -1,13 +1,13 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Cat, Owner, Person, Word, WordDetail, WordStat, PersonWordList
-from .serializers import CatSerializer, OwnerSerializer, PersonSerializer, WordSerializer, WordStatSerializer, PersonWordListSerializer, UpdatePersonWordSerializer
+from .serializers import CatSerializer, OwnerSerializer, PersonSerializer, WordSerializer, WordStatSerializer, PersonWordListSerializer, UpdatePersonWordSerializer, WordDetailSerializer, PersonWordSerializer
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import viewsets
-
+import random
 
 
 # @api_view(['GET', 'POST'])
@@ -140,23 +140,29 @@ class PersonWordListViewSet(generics.ListAPIView):
             queryset = queryset.filter(person=person)
         return queryset
 
-class UpdatePersonWordList(generics.UpdateAPIView):
-    queryset = Person.objects.all()
-    serializer_class = UpdatePersonWordSerializer
-    lookup_field = 'telegram_id'
-    def update(self, request, *args, **kwargs):
-        # telegram_id = request.data.get('person').get('telegram_id')
-        # word = request.data.get('word').get('word')
-        # word_instance = Word.objects.sget(word=word)
-        # word_detail = request.data.get('words_detail').get('translate')
-        # person = Person.objects.get(telegram_id=telegram_id)
-        # instance = PersonWordList.objects.get(person=person, word=word_instance)
-        # print(instance.words_detail.translate)
-        # a = self.get_queryset()
-        # person = a.filter(telegram_id='bla-bla-bla')[0]
-        # print(b)
-        #serializer = self.get_serializer(instance, data=request.data, partial=True)
-    
+
+class PersonWordApi(generics.RetrieveAPIView):
+    serializer_class = WordDetailSerializer
+
+    def get_queryset(self):
+        lst = []
+        telegram_id = self.request.query_params.get('telegram_id')
+        person = Person.objects.get(telegram_id=telegram_id)
+        person_word_list = PersonWordList.objects.filter(person=person)
+        for person_word in person_word_list:
+            person_word_details = WordDetail.objects.filter(word=person_word)
+            for person_word_detail in person_word_details:
+                if person_word_detail.word_stat.false_answer - person_word_detail.word_stat.true_answer >= 2:
+                    lst.append(person_word_detail)
+        rand_idx = random.randint(0, len(lst)-1)
+        return lst[rand_idx]
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = queryset
+        return obj
+        
+
 
     
 

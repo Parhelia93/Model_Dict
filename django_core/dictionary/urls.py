@@ -23,5 +23,5 @@ router.register('wordsstat', WordStatViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('personwordlist/<str:telegram_id>/', PersonWordListViewSet.as_view()),
-    path('updatepersonword/<str:telegram_id>/', UpdatePersonWordList.as_view())
+    path('personword/', PersonWordApi.as_view())
 ] 

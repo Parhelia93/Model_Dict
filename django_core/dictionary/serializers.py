@@ -1,3 +1,4 @@
+from cgitb import lookup
 from rest_framework import serializers
 from .models import Cat, Owner, Achievement, AchievementCat, Person, PersonWordList, Word, WordStat, WordDetail
 
@@ -49,6 +50,7 @@ class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ('user', 'telegram_id') 
+        
 
 class WordSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,10 +63,11 @@ class WordStatSerializer(serializers.ModelSerializer):
         fields = ('true_answer', 'false_answer') 
 
 class WordDetailSerializer(serializers.ModelSerializer):
-    word_stat = WordStatSerializer()
+    # word_stat = WordStatSerializer()
+    word = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = WordDetail
-        fields = ('translate', 'example', 'date_add', 'word_stat')
+        fields = ('word', 'translate', 'example')
 
 
 class PersonWordListSerializer(serializers.ModelSerializer):
@@ -83,4 +86,12 @@ class UpdatePersonWordSerializer(serializers.ModelSerializer):
         model = PersonWordList
         fields = ('person', 'word', 'words_detail')
 
+
+class PersonWordSerializer(serializers.ModelSerializer):
+    word = WordSerializer(read_only=True)
+    words_detail = WordDetailSerializer(read_only=True)
+    
+    class Meta:
+        model = PersonWordList
+        fields = ('word', 'words_detail')
     
