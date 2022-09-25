@@ -154,8 +154,10 @@ class PersonWordApi(generics.RetrieveAPIView):
             for person_word_detail in person_word_details:
                 if person_word_detail.word_stat.false_answer - person_word_detail.word_stat.true_answer >= 2:
                     lst.append(person_word_detail)
-        rand_idx = random.randint(0, len(lst)-1)
-        return lst[rand_idx]
+        if len(lst) > 0:
+            rand_idx = random.randint(0, len(lst)-1)
+            return lst[rand_idx]
+        return None
 
     def get_object(self):
         queryset = self.get_queryset()
