@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, HttpResponse, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,7 +9,8 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import viewsets
 import random
-
+from .data_fetcher import get_random_word
+from django.core.exceptions import ObjectDoesNotExist
 
 # @api_view(['GET', 'POST'])
 # def cat_list(request):
@@ -145,26 +147,49 @@ class PersonWordApi(generics.RetrieveAPIView):
     serializer_class = WordDetailSerializer
 
     def get_queryset(self):
-        lst = []
         telegram_id = self.request.query_params.get('telegram_id')
-        person = Person.objects.get(telegram_id=telegram_id)
+        try:
+            person = Person.objects.get(telegram_id=telegram_id)
+        except ObjectDoesNotExist:
+            person = None
         person_word_list = PersonWordList.objects.filter(person=person)
-        for person_word in person_word_list:
-            person_word_details = WordDetail.objects.filter(word=person_word)
-            for person_word_detail in person_word_details:
-                if person_word_detail.word_stat.false_answer - person_word_detail.word_stat.true_answer >= 2:
-                    lst.append(person_word_detail)
-        if len(lst) > 0:
-            rand_idx = random.randint(0, len(lst)-1)
-            return lst[rand_idx]
-        return None
+        return get_random_word(person_word_list)
 
     def get_object(self):
         queryset = self.get_queryset()
         obj = queryset
         return obj
         
+        
 
-
+class ResultPersonApi(generics.UpdateAPIView):
+    serializer_class = WordStatSerializer
+    queryset = WordStat.objects.all()
     
+    def get_queryset(self):
+        pk = self.request.data.get('pk')
+        answer = self.request.data.get('answer')
+        stat = WordStat.objects.get(pk=pk)
+        if answer == 'True':
+            stat.true_answer+=1
+        else:
+            stat.false_answer+=1
 
+        if stat:
+            return stat
+        return None
+        
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = queryset
+        return obj
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "updated successfully"})
+        else:
+            return Response({"message": "failed", "details": serializer.errors})

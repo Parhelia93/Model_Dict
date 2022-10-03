@@ -60,14 +60,17 @@ class WordSerializer(serializers.ModelSerializer):
 class WordStatSerializer(serializers.ModelSerializer):
     class Meta:
         model = WordStat
-        fields = ('true_answer', 'false_answer') 
+        fields = ('pk',)
+    
+    # def update(self,instance,request):
+    #     print(validated_data)
 
 class WordDetailSerializer(serializers.ModelSerializer):
-    # word_stat = WordStatSerializer()
+    word_stat = WordStatSerializer()
     word = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = WordDetail
-        fields = ('word', 'translate', 'example')
+        fields = ('word', 'translate', 'example', 'word_stat')
 
 
 class PersonWordListSerializer(serializers.ModelSerializer):
@@ -77,6 +80,7 @@ class PersonWordListSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonWordList
         fields = ('person', 'word', 'date_add', 'slug', 'words_detail')
+
 
 class UpdatePersonWordSerializer(serializers.ModelSerializer):
     word = WordSerializer()
